@@ -81,3 +81,17 @@
 .spinner {
   @apply animate-spin rounded-full border-2 border-muted border-t-primary;
 }
+
+/* Barcode scanner animations */
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.animate-scan-line {
+  animation: scan-line 2s ease-in-out infinite;
+}

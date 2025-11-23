@@ -1,15 +1,20 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { 
   Search, 
   Loader2,
   ExternalLink,
   ScanBarcode,
   Clock,
-  TrendingDown
+  TrendingDown,
+  Camera,
+  GitCompare
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import BarcodeScanner from '@/components/scanner/BarcodeScanner'
+import { useToast } from '@/hooks/use-toast'
 
 interface SearchResult {
   source: string
@@ -32,9 +37,27 @@ export default function SearchPage() {
   const [barcode, setBarcode] = useState('')
   const [searching, setSearching] = useState(false)
   const [results, setResults] = useState<SearchResponse | null>(null)
+  const [showScanner, setShowScanner] = useState(false)
+  const { toast } = useToast()
 
-  const handleSearch = async () => {
-    if (!query && !barcode) return
+  const handleScanSuccess = (decodedText: string, format: string) => {
+    setBarcode(decodedText)
+    setShowScanner(false)
+    
+    toast({
+      title: "✓ Codice rilevato!",
+      description: `${format}: ${decodedText}`,
+    })
+
+    // Auto-search after scan
+    setTimeout(() => {
+      handleSearch(decodedText)
+    }, 500)
+  }
+
+  const handleSearch = async (searchBarcode?: string) => {
+    const searchQuery = query || searchBarcode || barcode
+    if (!searchQuery) return
 
     setSearching(true)
 
@@ -112,9 +135,9 @@ export default function SearchPage() {
                 />
               </div>
             </div>
-            <div className="flex items-end">
+            <div className="flex flex-col gap-2 md:flex-row items-end">
               <Button 
-                onClick={handleSearch} 
+                onClick={() => handleSearch()} 
                 disabled={searching || (!query && !barcode)}
                 className="w-full md:w-auto"
               >
@@ -125,10 +148,26 @@ export default function SearchPage() {
                 )}
                 Cerca
               </Button>
+              <Button
+                onClick={() => setShowScanner(true)}
+                variant="outline"
+                className="w-full md:w-auto gap-2"
+              >
+                <Camera className="h-4 w-4" />
+                Scansiona
+              </Button>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Barcode Scanner Modal */}
+      {showScanner && (
+        <BarcodeScanner
+          onScanSuccess={handleScanSuccess}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
 
       {/* Results */}
       {results && (
@@ -228,6 +267,22 @@ export default function SearchPage() {
                   </div>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Call to Action - Comparison */}
+          <Card className="border-2 border-primary">
+            <CardContent className="p-6 text-center">
+              <h3 className="text-lg font-semibold mb-2">Confronta con i tuoi preventivi</h3>
+              <p className="text-gray-600 mb-4">
+                Vedi il confronto completo tra prezzi web e preventivi fornitori con analisi AI
+              </p>
+              <Link to="/comparison">
+                <Button size="lg" className="gap-2">
+                  <GitCompare className="h-5 w-5" />
+                  Vista Confronto 3 Colonne
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </>

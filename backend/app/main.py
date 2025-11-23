@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 import logging
 
 from .core.config import settings
-from .api.endpoints import quotes, search, reports
+from .api.endpoints import quotes, search, reports, products
 from .services.scraper.scraper_service import scraper_service
 
 # Logging setup
@@ -72,6 +72,7 @@ app.add_middleware(
 app.include_router(quotes.router, prefix=settings.API_PREFIX)
 app.include_router(search.router, prefix=settings.API_PREFIX)
 app.include_router(reports.router, prefix=settings.API_PREFIX)
+app.include_router(products.router, prefix=settings.API_PREFIX)
 
 
 # Health check
