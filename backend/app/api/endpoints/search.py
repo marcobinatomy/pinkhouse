@@ -8,11 +8,9 @@ from ...schemas.schemas import (
     PriceComparisonBase
 )
 from ...services.scraper.scraper_service import scraper_service
+from ...db.storage import search_cache, quotes_db
 
 router = APIRouter(prefix="/search", tags=["Ricerca Prezzi"])
-
-# Cache in-memory per MVP
-search_cache: dict = {}
 
 
 @router.post("/", response_model=SearchResponse)
@@ -99,9 +97,6 @@ async def search_quote_prices(
     """
     Cerca prezzi per tutti gli items di un preventivo
     """
-    # Import qui per evitare circular import
-    from .quotes import quotes_db
-    
     if quote_id not in quotes_db:
         raise HTTPException(status_code=404, detail="Preventivo non trovato")
     

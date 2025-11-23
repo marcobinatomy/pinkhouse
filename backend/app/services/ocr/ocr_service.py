@@ -9,8 +9,8 @@ from typing import List, Optional, Tuple
 import asyncio
 from anthropic import AsyncAnthropic
 import openai
-from ..core.config import settings
-from ..schemas.schemas import OCRResult, QuoteItemCreate
+from ...core.config import settings
+from ...schemas.schemas import OCRResult, QuoteItemCreate
 import logging
 
 logger = logging.getLogger(__name__)

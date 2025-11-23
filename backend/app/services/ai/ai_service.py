@@ -3,8 +3,8 @@ import openai
 from typing import List, Optional, Dict, Any
 import json
 from datetime import datetime
-from ..core.config import settings
-from ..schemas.schemas import QuoteDetail, PriceComparisonBase, ReportResponse
+from ...core.config import settings
+from ...schemas.schemas import QuoteDetail, PriceComparisonBase, ReportResponse
 import logging
 
 logger = logging.getLogger(__name__)

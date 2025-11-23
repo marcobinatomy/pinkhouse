@@ -5,11 +5,9 @@ from pydantic import BaseModel
 
 from ...schemas.schemas import ReportRequest, ReportResponse
 from ...services.ai.ai_service import ai_service
+from ...db.storage import reports_db, quotes_db
 
 router = APIRouter(prefix="/reports", tags=["Report AI"])
-
-# In-memory storage per MVP
-reports_db: dict = {}
 
 
 class ImageAnalysisRequest(BaseModel):
@@ -30,9 +28,6 @@ async def generate_report(request: ReportRequest):
     - **report_type**: Tipo report (comparison, analysis, recommendation)
     - **include_charts**: Includi grafici nel report
     """
-    # Import per evitare circular
-    from .quotes import quotes_db
-    
     if request.quote_id not in quotes_db:
         raise HTTPException(status_code=404, detail="Preventivo non trovato")
     

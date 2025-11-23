@@ -11,11 +11,9 @@ from ...schemas.schemas import (
 )
 from ...services.ocr.ocr_service import ocr_service
 from ...core.config import settings
+from ...db.storage import quotes_db
 
 router = APIRouter(prefix="/quotes", tags=["Preventivi"])
-
-# In-memory storage per MVP (sostituire con DB)
-quotes_db: dict = {}
 
 
 @router.post("/upload", response_model=UploadResponse)

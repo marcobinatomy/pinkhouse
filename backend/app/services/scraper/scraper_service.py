@@ -7,8 +7,8 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 import json
 import logging
-from ..core.config import settings
-from ..schemas.schemas import PriceComparisonBase, Availability, ScrapeResult
+from ...core.config import settings
+from ...schemas.schemas import PriceComparisonBase, Availability, ScrapeResult
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +39,12 @@ class ScraperService:
     async def close(self):
         """Chiude il browser"""
         if self.browser:
-            await self.browser.close()
-            self.browser = None
+            try:
+                await self.browser.close()
+            except Exception as e:
+                logger.warning(f"Error closing browser: {e}")
+            finally:
+                self.browser = None
     
     async def search_all_sources(
         self, 
