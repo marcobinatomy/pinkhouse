@@ -1,3 +1,9 @@
+"""
+PinkHouse - Smart Procurement Platform
+Tool creato da Marco Salvatici e Nicola Casarosa per binatomy.com
+Data: 23 Novembre 2024
+"""
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -5,7 +11,7 @@ from contextlib import asynccontextmanager
 import logging
 
 from .core.config import settings
-from .api.endpoints import quotes, search, reports, products
+from .api.endpoints import quotes, search, reports, products, suppliers, settings as settings_endpoint
 from .services.scraper.scraper_service import scraper_service
 
 # Logging setup
@@ -73,6 +79,8 @@ app.include_router(quotes.router, prefix=settings.API_PREFIX)
 app.include_router(search.router, prefix=settings.API_PREFIX)
 app.include_router(reports.router, prefix=settings.API_PREFIX)
 app.include_router(products.router, prefix=settings.API_PREFIX)
+app.include_router(suppliers.router, prefix=settings.API_PREFIX)
+app.include_router(settings_endpoint.router, prefix=settings.API_PREFIX)
 
 
 # Health check

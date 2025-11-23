@@ -1,0 +1,1 @@
+# PinkHouse - Email Automation Module

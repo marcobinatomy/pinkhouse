@@ -8,7 +8,10 @@ import {
   Clock,
   TrendingDown,
   Camera,
-  GitCompare
+  GitCompare,
+  Mail,
+  Building2,
+  CheckSquare
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -38,7 +41,15 @@ export default function SearchPage() {
   const [searching, setSearching] = useState(false)
   const [results, setResults] = useState<SearchResponse | null>(null)
   const [showScanner, setShowScanner] = useState(false)
+  const [selectedSuppliers, setSelectedSuppliers] = useState<number[]>([])
   const { toast } = useToast()
+
+  // Mock suppliers list
+  const suppliers = [
+    { id: 1, name: 'Fornitore A Tech', email: 'ordini@fornitorea.it', responseTime: '18h' },
+    { id: 2, name: 'Office Plus', email: 'shop@officeplus.it', responseTime: '24h' },
+    { id: 3, name: 'Digital Store', email: 'info@digitalstore.it', responseTime: '12h' },
+  ]
 
   const handleScanSuccess = (decodedText: string, format: string) => {
     setBarcode(decodedText)
@@ -53,6 +64,47 @@ export default function SearchPage() {
     setTimeout(() => {
       handleSearch(decodedText)
     }, 500)
+  }
+
+  const toggleSupplier = (supplierId: number) => {
+    setSelectedSuppliers(prev => 
+      prev.includes(supplierId) 
+        ? prev.filter(id => id !== supplierId)
+        : [...prev, supplierId]
+    )
+  }
+
+  const handleSendToSuppliers = async () => {
+    const productName = query || barcode
+    
+    if (!productName) {
+      toast({
+        title: "⚠️ Nessun prodotto specificato",
+        description: "Effettua prima una ricerca",
+        variant: "destructive"
+      })
+      return
+    }
+
+    if (selectedSuppliers.length === 0) {
+      toast({
+        title: "⚠️ Nessun fornitore selezionato",
+        description: "Seleziona almeno un fornitore",
+        variant: "destructive"
+      })
+      return
+    }
+
+    toast({
+      title: "📧 Richieste inviate!",
+      description: `Email inviate a ${selectedSuppliers.length} fornitori per "${productName}"`,
+    })
+
+    // TODO: Chiamata API per inviare preventivi
+    // await fetch('/api/v1/suppliers/quote-requests/batch', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ product_name: productName, supplier_ids: selectedSuppliers })
+    // })
   }
 
   const handleSearch = async (searchBarcode?: string) => {
@@ -283,6 +335,86 @@ export default function SearchPage() {
                   Vista Confronto 3 Colonne
                 </Button>
               </Link>
+            </CardContent>
+          </Card>
+
+          {/* NEW: Request Quotes from Suppliers */}
+          <Card className="border-2 border-pink-200 bg-gradient-to-r from-pink-50 to-white">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Mail className="h-5 w-5 text-pink-600" />
+                Richiedi Preventivi ai Tuoi Fornitori
+              </CardTitle>
+              <CardDescription>
+                Invia automaticamente richiesta preventivo via email ai fornitori selezionati
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Product Info */}
+              <div className="p-3 bg-white rounded-lg border">
+                <p className="text-sm text-gray-600">Prodotto:</p>
+                <p className="font-semibold text-lg">{query || barcode}</p>
+              </div>
+
+              {/* Suppliers Selection */}
+              <div>
+                <p className="text-sm font-medium text-gray-700 mb-3">Seleziona Fornitori:</p>
+                <div className="space-y-2">
+                  {suppliers.map((supplier) => (
+                    <div 
+                      key={supplier.id}
+                      className={`p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                        selectedSuppliers.includes(supplier.id)
+                          ? 'border-pink-600 bg-pink-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => toggleSupplier(supplier.id)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                            selectedSuppliers.includes(supplier.id)
+                              ? 'border-pink-600 bg-pink-600'
+                              : 'border-gray-300'
+                          }`}>
+                            {selectedSuppliers.includes(supplier.id) && (
+                              <CheckSquare className="h-4 w-4 text-white" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-semibold">{supplier.name}</p>
+                            <p className="text-xs text-gray-600">{supplier.email}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-gray-600">Risposta media</p>
+                          <p className="text-sm font-semibold text-pink-600">{supplier.responseTime}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Send Button */}
+              <Button 
+                onClick={handleSendToSuppliers}
+                disabled={selectedSuppliers.length === 0}
+                className="w-full gap-2 bg-pink-600 hover:bg-pink-700"
+                size="lg"
+              >
+                <Mail className="h-5 w-5" />
+                Invia Richiesta a {selectedSuppliers.length} Fornitori
+              </Button>
+
+              {/* Info Note */}
+              <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg text-sm">
+                <Building2 className="h-4 w-4 text-blue-600 mt-0.5" />
+                <p className="text-blue-700">
+                  Le email saranno inviate automaticamente con il template configurato. 
+                  Riceverai notifica quando arrivano le risposte.
+                </p>
+              </div>
             </CardContent>
           </Card>
         </>

@@ -6,7 +6,8 @@ import {
   BarChart3, 
   Settings,
   Menu,
-  X
+  X,
+  TrendingUp
 } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
@@ -16,6 +17,7 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
   { name: 'Preventivi', href: '/quotes', icon: FileText },
   { name: 'Cerca Prezzi', href: '/search', icon: Search },
+  { name: 'Analytics', href: '/analytics', icon: TrendingUp },
   { name: 'Report', href: '/reports', icon: BarChart3 },
 ]
 
